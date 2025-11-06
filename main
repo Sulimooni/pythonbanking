@@ -1,0 +1,108 @@
+def encrypt_password(password):
+    encrypted_password = ""
+    for char in password:
+        if char.isupper():
+            encrypted_password += chr((ord(char) + 3 - 65) % 26 + 65)
+        elif char.islower():
+            encrypted_password += chr((ord(char) + 3 - 97) % 26 + 97)
+        elif char.isdigit():
+            encrypted_password += str((int(char) + 3) % 10)
+        else:
+            encrypted_password += char
+    return encrypted_password
+
+def deposit(balance, amount):
+    balance += amount
+    print("New balance: ${:.2f}".format(balance))
+
+def withdraw(balance, amount):
+    if balance >= amount:
+        balance -= amount
+        print("New balance: ${:.2f}".format(balance))
+    else:
+        print("Transaction denied - insufficient funds")
+
+def main():
+    # Initialize account dictionary
+    account = {}
+
+    print("+--------------------------------------------+")
+    print("| Computer Science and Engineering           |")
+    print("| CSCE 1035 - Computer Programming I         |")
+    print("| Suliman D. 11693699 sulimandagoushin@my.unt.edu|")
+    print("+--------------------------------------------+")
+
+    # Prompt for new account details
+    user_id = input("Enter new user ID: ")
+    password = input("Enter password: ")
+    encrypted_password = encrypt_password(password)
+    balance = float(input("Enter initial balance: $"))
+
+    # Store account details in dictionary
+    account['user_id'] = user_id
+    account['password'] = encrypted_password
+    account['balance'] = balance
+    authenticated = False
+
+    while True:
+        print("******************* M E N U *****************")
+        print("| Select a service:                           |")
+        print("| 1. Login to Account                         |")
+        print("| 2. Deposit to Account                       |")
+        print("| 3. Withdraw from Account                    |")
+        print("| 4. Print Balance                            |")
+        print("| 5. Change Password                          |")
+        print("| 6. Exit/Logout                              |")
+        print("*********************************************")
+
+        choice = input("Enter choice: ")
+
+        if choice == '1':
+            user_id_input = input("Enter user ID: ")
+            password_input = input("Enter password: ")
+            if user_id_input == account['user_id'] and encrypt_password(password_input) == account['password']:
+                print("User {} logged in to account".format(user_id))
+                authenticated = True
+            else:
+                print("Unable to login - invalid user ID or password")
+
+        elif choice == '2':
+            if authenticated:
+                deposit_amount = float(input("Enter deposit amount: $"))
+                deposit(account['balance'], deposit_amount)
+            else:
+                print("Unable to perform transaction - user not logged in")
+
+        elif choice == '3':
+            if authenticated:
+                withdraw_amount = float(input("Enter withdrawal amount: $"))
+                withdraw(account['balance'], withdraw_amount)
+            else:
+                print("Unable to perform transaction - user not logged in")
+
+        elif choice == '4':
+            if authenticated:
+                print("{} balance: ${:.2f}".format(account['user_id'], account['balance']))
+            else:
+                print("Unable to perform transaction - user not logged in")
+
+        elif choice == '5':
+            if authenticated:
+                new_password = input("Enter new password: ")
+                account['password'] = encrypt_password(new_password)
+            else:
+                print("Unable to perform transaction - user not logged in")
+
+        elif choice == '6':
+            print("User {} logged out of account".format(user_id))
+            print("Thank you for holding your account with us")
+            break
+
+        elif choice == '9':
+            print("{} {} {:.2f}".format(account['user_id'], account['password'], account['balance']))
+
+        else:
+            print("Invalid selection - please try again")
+
+if __name__ == "__main__":
+    main()
